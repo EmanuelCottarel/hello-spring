@@ -23,4 +23,16 @@ public class CityService {
         return ResponseEntity.accepted().body("City deleted successfully");
     }
 
+    public ResponseEntity<?> update(City city, City newCity) {
+            city.setName(newCity.getName());
+            city.setNbInhabitants(newCity.getNbInhabitants());
+        return ResponseEntity.accepted().body(city);
+    }
+
+    public ResponseEntity<?> create(City city) {
+        city.setId(this.cities.size() + 1);
+        this.cities.add(city);
+        return ResponseEntity.accepted().body(city);
+    }
+
 }

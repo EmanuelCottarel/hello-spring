@@ -37,23 +37,19 @@ public class CityController {
         if (this.cityService.cities.stream().anyMatch(city1 -> city1.getId() == city.getId())){
             return ResponseEntity.badRequest().body("City already exists");
         }
-        city.setId(this.cityService.cities.size() + 1);
-        this.cityService.cities.add(city);
-        return ResponseEntity.accepted().body(city);
+
+        return this.cityService.create(city);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(
             @PathVariable int id,
             @RequestBody City city) {
-
         City existingCity = this.cityService.cities.stream().filter(city1 -> city1.getId() == id).findFirst().orElse(null);
-        if (existingCity != null) {
-            existingCity.setName(city.getName());
-            existingCity.setNbInhabitants(city.getNbInhabitants());
+        if (existingCity == null) {
+            return ResponseEntity.badRequest().body("Ressource not found");
         }
-
-        return ResponseEntity.accepted().body(city);
+        return this.cityService.update(existingCity, city);
     }
 
     @DeleteMapping("/{id}")
