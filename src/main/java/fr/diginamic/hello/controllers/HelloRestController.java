@@ -14,7 +14,7 @@ public class HelloRestController {
     private HelloService helloService;
 
     @GetMapping
-    public String direHello(){
+    public String sayHello(){
         return this.helloService.sayHello();
     }
 }
