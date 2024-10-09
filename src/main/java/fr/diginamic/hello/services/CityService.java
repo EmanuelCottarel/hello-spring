@@ -1,38 +1,48 @@
 package fr.diginamic.hello.services;
 
+import fr.diginamic.hello.dao.CityDao;
 import fr.diginamic.hello.model.City;
+import fr.diginamic.hello.repository.CityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class CityService {
 
-    public List<City> cities = new ArrayList<>(List.of(
-            new City(1, "Avignon", 200000),
-            new City(2, "Montpellier", 400000)));
+    @Autowired
+    private CityRepository cityRepository;
+
+    @Autowired
+    private CityDao cityDao;
+
+    public List<City> getAll() {
+//        return this.cityRepository.findAll();
+        return this.cityDao.findAll();
+    }
 
     public City findById(int id) {
-        return this.cities.stream().filter(city1 -> city1.getId() == id).findFirst().orElse(null);
+        return this.cityDao.findById(id);
+    }
+
+    public City findByName(String name) {
+        return this.cityDao.findByName(name);
     }
 
     public ResponseEntity<?> delete(City city) {
-        this.cities.removeIf(c -> c.getId() == city.getId());
-        return ResponseEntity.accepted().body("City deleted successfully");
+        this.cityDao.delete(city);
+        return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> update(City city, City newCity) {
-            city.setName(newCity.getName());
-            city.setNbInhabitants(newCity.getNbInhabitants());
-        return ResponseEntity.accepted().body(city);
+    public City update(City city) {
+        return this.cityDao.update(city);
     }
 
-    public ResponseEntity<?> create(City city) {
-        city.setId(this.cities.size() + 1);
-        this.cities.add(city);
-        return ResponseEntity.accepted().body(city);
+    public City create(City city) {
+//      return this.cityRepository.save(city);
+        return this.cityDao.create(city);
     }
 
 }

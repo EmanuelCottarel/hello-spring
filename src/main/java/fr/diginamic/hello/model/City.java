@@ -1,16 +1,23 @@
 package fr.diginamic.hello.model;
 
-import java.util.Objects;
+import jakarta.persistence.*;
 
+@Entity
 public class City {
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private int id;
     private String name;
-    private double nbInhabitants;
+    private int nbInhabitants;
+
+    @ManyToOne
+    private Departement departement;
 
     public City() {
     }
 
-    public City(int id, String name, double nbInhabitants) {
+    public City(int id, String name, int nbInhabitants) {
         this.id = id;
         this.name = name;
         this.nbInhabitants = nbInhabitants;
@@ -32,11 +39,19 @@ public class City {
         this.name = name;
     }
 
-    public double getNbInhabitants() {
+    public int getNbInhabitants() {
         return nbInhabitants;
     }
 
-    public void setNbInhabitants(double nbInhabitants) {
+    public void setNbInhabitants(int nbInhabitants) {
         this.nbInhabitants = nbInhabitants;
+    }
+
+    public Departement getDepartement() {
+        return departement;
+    }
+
+    public void setDepartement(Departement departement) {
+        this.departement = departement;
     }
 }

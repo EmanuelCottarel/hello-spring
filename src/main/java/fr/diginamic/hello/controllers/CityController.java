@@ -2,7 +2,10 @@ package fr.diginamic.hello.controllers;
 
 import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.services.CityService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,39 +20,36 @@ public class CityController {
 
     @GetMapping
     public List<City> getCities(){
-        return this.cityService.cities;
+        return this.cityService.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getCity(@PathVariable int id) {
-        City existingCity = this.cityService.cities.stream().filter(city -> city.getId() == id).findFirst().orElse(null);
+        City existingCity = this.cityService.findById(id);
         if (existingCity == null) {
             return ResponseEntity.badRequest().body("Ressource not found");
         }
-        return ResponseEntity.accepted().body(existingCity);
+        return new ResponseEntity<City>(existingCity, HttpStatus.OK);
+    }
+
+    @GetMapping("/findby")
+    public ResponseEntity<?> findBy(@RequestParam String name) {
+        City existingCity = this.cityService.findByName(name);
+        if (existingCity == null) {
+            return ResponseEntity.badRequest().body("Ressource not found");
+        }
+        return new ResponseEntity<City>(existingCity, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody City city) {
-        if (this.cityService.cities.stream().anyMatch(c -> c.getName().equals(city.getName()))){
-            return ResponseEntity.badRequest().body("City already exists");
-        }
-        if (this.cityService.cities.stream().anyMatch(city1 -> city1.getId() == city.getId())){
-            return ResponseEntity.badRequest().body("City already exists");
-        }
-
-        return this.cityService.create(city);
+    public City create(@Valid @RequestBody City city) {
+         return this.cityService.create(city);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> update(
-            @PathVariable int id,
-            @RequestBody City city) {
-        City existingCity = this.cityService.cities.stream().filter(city1 -> city1.getId() == id).findFirst().orElse(null);
-        if (existingCity == null) {
-            return ResponseEntity.badRequest().body("Ressource not found");
-        }
-        return this.cityService.update(existingCity, city);
+    @PutMapping
+    public City update(
+            @Valid @RequestBody City city) {
+        return this.cityService.update(city);
     }
 
     @DeleteMapping("/{id}")
