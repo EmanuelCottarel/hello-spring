@@ -1,5 +1,6 @@
 package fr.diginamic.hello.dao;
 
+import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.model.Departement;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -37,4 +38,31 @@ public class DepartementDao {
     public void delete(Departement dep) {
         this.em.remove(dep);
     }
+
+    public List<City> getLargestCities(int id, int limit){
+        return this.em.createQuery(
+                "Select c " +
+                        "from City c " +
+                        "WHERE c.departement.id = :id " +
+                        "ORDER BY c.nbInhabitants DESC"
+                        , City.class)
+                .setParameter("id", id)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    public List<City> getCitiesPopulationBetweenLimit(int id, int min, int max){
+        return this.em.createQuery(
+                "Select c " +
+                        "from City c " +
+                        "WHERE c.departement.id = :id " +
+                        "AND c.nbInhabitants BETWEEN :min and :max " +
+                        "ORDER BY c.nbInhabitants DESC"
+                        , City.class)
+                .setParameter("id", id)
+                .setParameter("min", min)
+                .setParameter("max", max)
+                .getResultList();
+    }
+
 }

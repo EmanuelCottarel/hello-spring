@@ -1,9 +1,11 @@
 package fr.diginamic.hello.services;
 
 import fr.diginamic.hello.dao.CityDao;
+import fr.diginamic.hello.exceptions.CityNotFoundException;
 import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,7 @@ public class CityService {
     }
 
     public City findById(int id) {
-        return this.cityDao.findById(id);
+            return this.cityDao.findById(id).orElseThrow(() -> new CityNotFoundException("City with id " + id + " not found"));
     }
 
     public City findByName(String name) {

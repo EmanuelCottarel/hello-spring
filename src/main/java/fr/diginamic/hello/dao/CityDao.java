@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CityDao {
@@ -25,8 +26,9 @@ public class CityDao {
         return this.em.createQuery("from City").getResultList();
     }
 
-    public City findById(int id){
-        return this.em.find(City.class, id);
+    public Optional<City> findById(int id) {
+        City city = this.em.find(City.class, id);
+        return Optional.ofNullable(city);
     }
 
     public City findByName(String name) {

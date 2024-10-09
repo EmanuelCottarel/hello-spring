@@ -1,9 +1,9 @@
 package fr.diginamic.hello.controllers;
 
+import fr.diginamic.hello.exceptions.CityNotFoundException;
 import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.services.CityService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +24,13 @@ public class CityController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCity(@PathVariable int id) {
-        City existingCity = this.cityService.findById(id);
-        if (existingCity == null) {
-            return ResponseEntity.badRequest().body("Ressource not found");
+    public ResponseEntity<City> getCity(@PathVariable int id) {
+        try {
+            City city = cityService.findById(id);
+            return new ResponseEntity<>(city, HttpStatus.OK);
+        } catch (CityNotFoundException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<City>(existingCity, HttpStatus.OK);
     }
 
     @GetMapping("/findby")

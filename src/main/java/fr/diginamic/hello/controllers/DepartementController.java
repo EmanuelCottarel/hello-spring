@@ -4,6 +4,7 @@ import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.model.Departement;
 import fr.diginamic.hello.services.DepartementService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,5 +51,20 @@ public class DepartementController {
             return ResponseEntity.badRequest().body("Ressource not found");
         }
         return this.departementService.delete(existingCity);
+    }
+
+    @GetMapping("/{id}/largest-cities")
+    public List<City> getLargestCities(
+            @PathVariable int id,
+            @NotNull @RequestParam int limit){
+        return this.departementService.getLargestCities(id, limit);
+    }
+
+    @GetMapping("/{id}/population-between-limit")
+    public List<City> getCitiesPopulationBetweenLimit(
+            @PathVariable int id,
+            @NotNull @RequestParam int min,
+            @NotNull @RequestParam int max){
+        return this.departementService.getCitiesPopulationBetweenLimit(id, min, max);
     }
 }

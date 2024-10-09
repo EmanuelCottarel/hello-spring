@@ -1,6 +1,7 @@
 package fr.diginamic.hello.services;
 
 import fr.diginamic.hello.dao.DepartementDao;
+import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.model.Departement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,4 +35,13 @@ public class DepartementService {
     public Departement create(Departement dep) {
         return this.departementDao.create(dep);
     }
+
+    public List<City> getLargestCities(int id, int limit){
+        return this.departementDao.getLargestCities(id, limit);
+    }
+
+    public List<City> getCitiesPopulationBetweenLimit(int id, int min, int max){
+        return this.departementDao.getCitiesPopulationBetweenLimit(id, min, max);
+    }
+
 }
