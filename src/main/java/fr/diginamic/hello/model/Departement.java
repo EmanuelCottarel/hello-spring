@@ -1,5 +1,6 @@
 package fr.diginamic.hello.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -9,9 +10,12 @@ public class Departement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
 
-    @OneToMany
+    private String name;
+    private String code;
+
+    @OneToMany(mappedBy = "departement")
+    @JsonIgnore
     private List<City> cities;
 
     public int getId() {
@@ -36,5 +40,13 @@ public class Departement {
 
     public void setCities(List<City> cities) {
         this.cities = cities;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

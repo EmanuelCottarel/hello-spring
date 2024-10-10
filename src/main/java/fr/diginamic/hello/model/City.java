@@ -1,5 +1,6 @@
 package fr.diginamic.hello.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -7,9 +8,14 @@ public class City {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private int id;
+    private long id;
+
     private String name;
-    private int nbInhabitants;
+
+    private long nbInhabitants;
+
+    @JsonIgnore
+    private Double idRegion;
 
     @ManyToOne
     private Departement departement;
@@ -17,17 +23,11 @@ public class City {
     public City() {
     }
 
-    public City(int id, String name, int nbInhabitants) {
-        this.id = id;
-        this.name = name;
-        this.nbInhabitants = nbInhabitants;
-    }
-
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -39,11 +39,11 @@ public class City {
         this.name = name;
     }
 
-    public int getNbInhabitants() {
+    public long getNbInhabitants() {
         return nbInhabitants;
     }
 
-    public void setNbInhabitants(int nbInhabitants) {
+    public void setNbInhabitants(long nbInhabitants) {
         this.nbInhabitants = nbInhabitants;
     }
 
@@ -53,5 +53,13 @@ public class City {
 
     public void setDepartement(Departement departement) {
         this.departement = departement;
+    }
+
+    public double getIdRegion() {
+        return idRegion;
+    }
+
+    public void setIdRegion(double ID_REGION) {
+        this.idRegion = ID_REGION;
     }
 }
