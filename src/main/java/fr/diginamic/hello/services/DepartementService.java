@@ -1,14 +1,12 @@
 package fr.diginamic.hello.services;
 
 import fr.diginamic.hello.dao.DepartementDao;
-import fr.diginamic.hello.exceptions.CityNotFoundException;
 import fr.diginamic.hello.exceptions.DepartementNotFoundException;
 import fr.diginamic.hello.exceptions.FunctionalException;
 import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.model.Departement;
 import fr.diginamic.hello.repository.DepartementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +62,9 @@ public class DepartementService {
     }
 
     public boolean cityAlreadyExists(City city, Departement dept) {
-        return city.getDepartement().getCities().stream().anyMatch(c -> c.getName().equals(city.getName()));
+        if (dept != null){
+            return dept.getCities().stream().anyMatch(c -> c.getName().equals(city.getName()));
+        }
+        return false;
     }
-
 }

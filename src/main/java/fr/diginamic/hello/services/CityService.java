@@ -5,6 +5,7 @@ import fr.diginamic.hello.exceptions.FunctionalException;
 import fr.diginamic.hello.mapper.CityMapper;
 import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.dto.CityDto;
+import fr.diginamic.hello.model.Departement;
 import fr.diginamic.hello.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,11 +44,21 @@ public class CityService {
         return ResponseEntity.ok().build();
     }
 
-    public City update(City city) {
+    public City update(City city) throws FunctionalException {
+        this.validateCity(city);
         return this.cityRepository.save(city);
     }
 
     public City create(City city) throws FunctionalException {
+        Departement departement = departementService.findByCode(city.getDepartement().getCode());
+        if (departement != null){
+            city.setDepartement(departement);
+        }
+        this.validateCity(city);
+        return this.cityRepository.save(city);
+    }
+
+    private void validateCity(City city) throws FunctionalException {
         if (city.getNbInhabitants() < 10) {
             throw new FunctionalException("The number of inhabitants must exceed 10");
         }
@@ -60,7 +71,6 @@ public class CityService {
         if (departementService.cityAlreadyExists(city, city.getDepartement())) {
             throw new FunctionalException("This city name already exists in this departement");
         }
-        return this.cityRepository.save(city);
     }
 
     public List<City> findByNameStartingWith(String prefix) throws FunctionalException {

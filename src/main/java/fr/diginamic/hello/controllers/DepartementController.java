@@ -1,6 +1,9 @@
 package fr.diginamic.hello.controllers;
 
+import fr.diginamic.hello.dto.DepartementDto;
+import fr.diginamic.hello.exceptions.DepartementNotFoundException;
 import fr.diginamic.hello.exceptions.FunctionalException;
+import fr.diginamic.hello.mapper.DepartementMapper;
 import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.model.Departement;
 import fr.diginamic.hello.services.DepartementService;
@@ -20,18 +23,23 @@ public class DepartementController {
     @Autowired
     private DepartementService departementService;
 
+    @Autowired
+    private DepartementMapper departementMapper;
+
     @GetMapping
-    public List<Departement> getDepartements(){
-        return this.departementService.getAll();
+    public List<DepartementDto> getDepartements() {
+        List<Departement> depts = this.departementService.getAll();
+        return depts.stream().map(dept -> departementMapper.toDto(dept)).toList();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDepartement(@PathVariable int id) {
-        Departement existingCity = this.departementService.findById(id);
-        if (existingCity == null) {
-            return ResponseEntity.badRequest().body("Ressource not found");
+    public ResponseEntity<DepartementDto> getDepartement(@PathVariable int id) {
+        try {
+            Departement existingCity = this.departementService.findById(id);
+            return new ResponseEntity<>(this.departementMapper.toDto(existingCity), HttpStatus.OK);
+        }catch (DepartementNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<Departement>(existingCity, HttpStatus.OK);
     }
 
     @PostMapping
@@ -61,7 +69,7 @@ public class DepartementController {
     @GetMapping("/{id}/largest-cities")
     public List<City> getLargestCities(
             @PathVariable int id,
-            @NotNull @RequestParam int limit){
+            @NotNull @RequestParam int limit) {
         return this.departementService.getLargestCities(id, limit);
     }
 
@@ -69,7 +77,7 @@ public class DepartementController {
     public List<City> getCitiesPopulationBetweenLimit(
             @PathVariable int id,
             @NotNull @RequestParam int min,
-            @NotNull @RequestParam int max){
+            @NotNull @RequestParam int max) {
         return this.departementService.getCitiesPopulationBetweenLimit(id, min, max);
     }
 }

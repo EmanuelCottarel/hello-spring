@@ -30,7 +30,7 @@ public class CityController {
 
     @GetMapping
     public Page<CityDto> getCities(@RequestParam(defaultValue = "0") int page,
-                                @RequestParam(defaultValue = "10") int size) {
+                                   @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return this.cityService.findAllPageable(pageable);
     }
@@ -52,17 +52,13 @@ public class CityController {
     }
 
     @PostMapping
-    public City create(@Valid @RequestBody City city) {
-        try {
-            return this.cityService.create(city);
-        } catch (FunctionalException e) {
-            throw new RuntimeException(e);
-        }
+    public City create(@Valid @RequestBody City city) throws FunctionalException {
+        return this.cityService.create(city);
     }
 
     @PutMapping
     public City update(
-            @Valid @RequestBody City city) {
+            @Valid @RequestBody City city) throws FunctionalException {
         return this.cityService.update(city);
     }
 
@@ -76,27 +72,17 @@ public class CityController {
     }
 
     @GetMapping("/findby-name-starting-with")
-    public List<CityDto> findByNameStartingWith(@RequestParam String prefix) {
-        List<City> cities;
-        try {
-            cities = this.cityService.findByNameStartingWith(prefix);
-        } catch (FunctionalException e) {
-            throw new RuntimeException(e);
-        }
+    public List<CityDto> findByNameStartingWith(@RequestParam String prefix) throws FunctionalException {
+        List<City> cities = this.cityService.findByNameStartingWith(prefix);
+
         return cities.stream()
                 .map(cityMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/findby-nb-inhabitants-after")
-    public List<CityDto> findByNbInhabitantsAfter(@RequestParam long min) {
-        List<City> cities;
-        try {
-            cities = this.cityService.findByNbInhabitantsAfter(min);
-        } catch (FunctionalException e) {
-            throw new RuntimeException(e);
-        }
-
+    public List<CityDto> findByNbInhabitantsAfter(@RequestParam long min) throws FunctionalException {
+        List<City> cities = this.cityService.findByNbInhabitantsAfter(min);
         return cities.stream()
                 .map(cityMapper::toDto)
                 .collect(Collectors.toList());
@@ -106,13 +92,9 @@ public class CityController {
     public List<CityDto> findByNbInhabitantsBetween(
             @RequestParam long min,
             @RequestParam long max
-    ) {
-        List<City> cities;
-        try {
-            cities = this.cityService.findByNbInhabitantsBetween(min, max);
-        } catch (FunctionalException e) {
-            throw new RuntimeException(e);
-        }
+    ) throws FunctionalException {
+
+        List<City> cities = this.cityService.findByNbInhabitantsBetween(min, max);
         return cities.stream()
                 .map(cityMapper::toDto)
                 .collect(Collectors.toList());
@@ -122,13 +104,9 @@ public class CityController {
     public List<CityDto> findByDepartement_IdAndNbInhabitantsAfter(
             @RequestParam String codeDept,
             @RequestParam long min
-    ) {
-        List<City> cities;
-        try {
-            cities = this.cityService.findByDepartement_IdAndNbInhabitantsAfter(codeDept, min);
-        } catch (FunctionalException e) {
-            throw new RuntimeException(e);
-        }
+    ) throws FunctionalException {
+
+        List<City> cities = this.cityService.findByDepartement_IdAndNbInhabitantsAfter(codeDept, min);
         return cities.stream()
                 .map(cityMapper::toDto)
                 .collect(Collectors.toList());
@@ -139,13 +117,9 @@ public class CityController {
             @RequestParam String codeDept,
             @RequestParam long min,
             @RequestParam long max
-    ) {
-        List<City> cities;
-        try {
-            cities = this.cityService.findByDepartementAndNbInhabitantsBetween(codeDept, min, max);
-        } catch (FunctionalException e) {
-            throw new RuntimeException(e);
-        }
+    ) throws FunctionalException {
+
+        List<City> cities = this.cityService.findByDepartementAndNbInhabitantsBetween(codeDept, min, max);
         return cities.stream()
                 .map(cityMapper::toDto)
                 .collect(Collectors.toList());
