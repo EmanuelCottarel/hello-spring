@@ -1,7 +1,10 @@
 package fr.diginamic.hello.services;
 
 import fr.diginamic.hello.exceptions.CityNotFoundException;
+import fr.diginamic.hello.exceptions.FunctionalException;
+import fr.diginamic.hello.mapper.CityMapper;
 import fr.diginamic.hello.model.City;
+import fr.diginamic.hello.dto.CityDto;
 import fr.diginamic.hello.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,8 +20,14 @@ public class CityService {
     @Autowired
     private CityRepository cityRepository;
 
-    public Page<City> findAllPageable(Pageable pageable) {
-        return this.cityRepository.findAll(pageable);
+    @Autowired
+    CityMapper cityMapper;
+    @Autowired
+    private DepartementService departementService;
+
+    public Page<CityDto> findAllPageable(Pageable pageable) {
+        Page<City> cityPage = this.cityRepository.findAll(pageable);
+        return cityPage.map(cityMapper::toDto);
     }
 
     public City findById(long id) {
@@ -38,34 +47,67 @@ public class CityService {
         return this.cityRepository.save(city);
     }
 
-    public City create(City city) {
+    public City create(City city) throws FunctionalException {
+        if (city.getNbInhabitants() < 10) {
+            throw new FunctionalException("The number of inhabitants must exceed 10");
+        }
+        if (city.getName().length() < 2) {
+            throw new FunctionalException("The name length must be at least 2 characters");
+        }
+        if (city.getDepartement().getCode().length() != 2) {
+            throw new FunctionalException("The departement code length must be exactly 2 characters");
+        }
+        if (departementService.cityAlreadyExists(city, city.getDepartement())) {
+            throw new FunctionalException("This city name already exists in this departement");
+        }
         return this.cityRepository.save(city);
     }
 
-    public List<City> findByNameStartingWith(String prefix){
-       return this.cityRepository.findByNameStartingWith(prefix);
+    public List<City> findByNameStartingWith(String prefix) throws FunctionalException {
+        List<City> cities = this.cityRepository.findByNameStartingWith(prefix);
+        if (cities.isEmpty()) {
+            throw new FunctionalException("City with name " + prefix + " not found");
+        }
+        return cities;
     }
 
-    public List<City> findByNbInhabitantsAfter(long min){
-       return this.cityRepository.findByNbInhabitantsAfter(min);
+    public List<City> findByNbInhabitantsAfter(long min) throws FunctionalException {
+        List<City> cities = this.cityRepository.findByNbInhabitantsAfter(min);
+        if (cities.isEmpty()) {
+            throw new FunctionalException("No cities with at least" + min + " inhabitants found");
+        }
+        return cities;
     }
 
-    public List<City> findByNbInhabitantsBetween(long min, long max){
-       return this.cityRepository.findByNbInhabitantsBetween(min, max);
+    public List<City> findByNbInhabitantsBetween(long min, long max) throws FunctionalException {
+        List<City> cities = this.cityRepository.findByNbInhabitantsBetween(min, max);
+        if (cities.isEmpty()) {
+            throw new FunctionalException("No city has a population between " + min + " and " + max);
+        }
+        return cities;
     }
 
-    public List<City> findByDepartement_IdAndNbInhabitantsAfter(long idDept, long min){
-       return this.cityRepository.findByDepartement_IdAndNbInhabitantsAfter(idDept, min);
+    public List<City> findByDepartement_IdAndNbInhabitantsAfter(String codeDept, long min) throws FunctionalException {
+        List<City> cities = this.cityRepository.findByDepartement_CodeAndNbInhabitantsAfter(codeDept, min);
+        if (cities.isEmpty()) {
+            throw new FunctionalException("No town has a population of over " + min + " in the " + codeDept + " département");
+        }
+        return cities;
     }
 
-    public List<City> findByDepartement_IdAndNbInhabitantsBetween(long dept, long min, long max){
-       return this.cityRepository.findByDepartement_IdAndNbInhabitantsBetween(dept, min, max);
+    public List<City> findByDepartementAndNbInhabitantsBetween(String codeDept, long min, long max) throws FunctionalException {
+        List<City> cities = this.cityRepository.findByDepartement_CodeAndNbInhabitantsBetween(codeDept, min, max);
+        if (cities.isEmpty()) {
+            throw new FunctionalException("No town has a population between " + min + " and " + max + " in the " + codeDept + " département");
+        }
+        return cities;
     }
 
-    public Page<City> findByDepartement_IdOrderByNbInhabitantsDesc(Pageable pageable, long deptId){
-       return this.cityRepository.findByDepartement_IdOrderByNbInhabitantsDesc(pageable, deptId);
-    }
+    public Page<CityDto> findDepartementBiggestCities(Pageable pageable, String deptId) {
+        Page<City> cityPage = this.cityRepository.findByDepartement_CodeOrderByNbInhabitantsDesc(pageable, deptId);
+        return cityPage.map(cityMapper::toDto);
 
+    }
 
 
 }

@@ -1,5 +1,6 @@
 package fr.diginamic.hello.controllers;
 
+import fr.diginamic.hello.exceptions.FunctionalException;
 import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.model.Departement;
 import fr.diginamic.hello.services.DepartementService;
@@ -35,7 +36,11 @@ public class DepartementController {
 
     @PostMapping
     public Departement create(@Valid @RequestBody Departement city) {
-        return this.departementService.create(city);
+        try {
+            return this.departementService.create(city);
+        } catch (FunctionalException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PutMapping
