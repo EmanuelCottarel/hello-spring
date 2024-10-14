@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>City</title>
+</head>
+<body>
+<h1 th:text="${title}">Home</h1>
+<a th:href="@{/}">Home</a>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Departement</th>
+        <th>Population</th>
+        <th>Action</th>
+
+    </tr>
+    <tr th:each="city : ${cities}">
+        <td th:text="${city.name}">Name</td>
+        <td th:text="${city.departement.code + ' - ' + city.departement.name}">Name</td>
+        <td th:text="${city.nbInhabitants}">00</td>
+        <td><a href="city-detail.html" th:href="@{/city/{id}(id=${city.id})}">View</a></td>
+    </tr>
+</table>
+</body>
+</html>

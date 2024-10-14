@@ -1,4 +1,4 @@
-package fr.diginamic.hello.controllers;
+package fr.diginamic.hello.restcontrollers;
 
 import fr.diginamic.hello.services.HelloService;
 import org.springframework.beans.factory.annotation.Autowired;

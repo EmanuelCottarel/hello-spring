@@ -1,4 +1,4 @@
-package fr.diginamic.hello.controllers;
+package fr.diginamic.hello.restcontrollers;
 
 import fr.diginamic.hello.exceptions.CityNotFoundException;
 import fr.diginamic.hello.exceptions.FunctionalException;
@@ -6,20 +6,26 @@ import fr.diginamic.hello.mapper.CityMapper;
 import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.dto.CityDto;
 import fr.diginamic.hello.services.CityService;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/city")
+@RequestMapping("/api/city")
 public class CityController {
 
     @Autowired
@@ -33,6 +39,11 @@ public class CityController {
                                    @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return this.cityService.findAllPageable(pageable);
+    }
+
+    @GetMapping("/findall")
+    public List<CityDto> findAll(){
+        return this.cityService.findAll().stream().map(cityMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
@@ -134,6 +145,29 @@ public class CityController {
         Pageable pageable = PageRequest.of(page, size);
         return this.cityService.findDepartementBiggestCities(pageable, codeDept);
     }
+
+    @GetMapping("/getcsv")
+    public void getCitiesCSV(
+            HttpServletResponse response,
+            @RequestParam long minInhabitants
+    ) throws IOException, FunctionalException {
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment;filename=cities.csv");
+        List<City> cities = this.cityService.findByNbInhabitantsAfter(minInhabitants);
+        PrintWriter writer = response.getWriter();
+        writer.println("name,population,department_code, department_name");
+        for (City city : cities) {
+            writer.printf("%s,%d,%s%n",
+                    city.getName(),
+                    city.getNbInhabitants(),
+                    city.getDepartement().getCode());
+        }
+
+        writer.flush();
+        writer.close();
+    }
+
+
 
 
 }

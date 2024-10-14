@@ -1,5 +1,8 @@
-package fr.diginamic.hello.controllers;
+package fr.diginamic.hello.restcontrollers;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfWriter;
 import fr.diginamic.hello.dto.DepartementDto;
 import fr.diginamic.hello.exceptions.DepartementNotFoundException;
 import fr.diginamic.hello.exceptions.FunctionalException;
@@ -7,6 +10,7 @@ import fr.diginamic.hello.mapper.DepartementMapper;
 import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.model.Departement;
 import fr.diginamic.hello.services.DepartementService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +18,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/departement")
+@RequestMapping("/api/departement")
 public class DepartementController {
 
     @Autowired
@@ -79,5 +84,37 @@ public class DepartementController {
             @NotNull @RequestParam int min,
             @NotNull @RequestParam int max) {
         return this.departementService.getCitiesPopulationBetweenLimit(id, min, max);
+    }
+
+    @GetMapping("/department-pdf/{id}")
+    public void getDepartementPDF(@PathVariable long id, HttpServletResponse response) throws IOException, DocumentException {
+        response.setHeader("Content-Disposition", "attachment; filename=\"departement.pdf\"");
+        Document document = new com.itextpdf.text.Document(PageSize.A4);
+        PdfWriter.getInstance(document, response.getOutputStream());
+
+        Departement dept = this.departementService.findById(id);
+        List<City> cities = dept.getCities();
+
+        document.open();
+        document.addTitle("Department");
+        document.newPage();
+        BaseFont baseFont = BaseFont.createFont();
+        Phrase title = new Phrase(dept.getName() + "\n", new Font(baseFont, 32.0f, 1));
+        document.add(title);
+
+        Phrase code = new Phrase("Department code: " + dept.getCode() + "\n", new Font(baseFont, 12.0f, 1));
+        document.add(code);
+
+        Phrase title2 = new Phrase("Cities list: \n", new Font(baseFont, 12.0f, 1));
+        document.add(title2);
+
+        for (City city : cities) {
+            Phrase cityLine = new Phrase("- " + city.getName() + "\n", new Font(baseFont, 12.0f, 1));
+            document.add(cityLine);
+        }
+
+        document.close();
+
+        response.flushBuffer();
     }
 }

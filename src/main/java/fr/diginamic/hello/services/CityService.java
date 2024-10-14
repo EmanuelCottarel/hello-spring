@@ -7,6 +7,7 @@ import fr.diginamic.hello.model.City;
 import fr.diginamic.hello.dto.CityDto;
 import fr.diginamic.hello.model.Departement;
 import fr.diginamic.hello.repository.CityRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,10 @@ public class CityService {
     public Page<CityDto> findAllPageable(Pageable pageable) {
         Page<City> cityPage = this.cityRepository.findAll(pageable);
         return cityPage.map(cityMapper::toDto);
+    }
+
+    public List<City> findAll() {
+        return this.cityRepository.findAll();
     }
 
     public City findById(long id) {
@@ -116,7 +121,23 @@ public class CityService {
     public Page<CityDto> findDepartementBiggestCities(Pageable pageable, String deptId) {
         Page<City> cityPage = this.cityRepository.findByDepartement_CodeOrderByNbInhabitantsDesc(pageable, deptId);
         return cityPage.map(cityMapper::toDto);
+    }
 
+    public String getCitiesSCV(long minInhabitants){
+        String csvHeader = "name,population,department_code, department_name";
+        List<City> cities = this.cityRepository.findByNbInhabitantsAfter(minInhabitants);
+        StringBuilder csvContent = new StringBuilder();
+        csvContent.append(csvHeader);
+
+
+        for (City city : cities) {
+            csvContent.append(city.getName()).append(",")
+                    .append(city.getNbInhabitants()).append(",")
+                    .append(city.getDepartement().getCode()).append(",")
+                    .append(city.getDepartement().getName()).append("\n");
+        }
+
+        return csvContent.toString();
     }
 
 
