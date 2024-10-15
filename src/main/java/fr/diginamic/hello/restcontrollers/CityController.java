@@ -1,21 +1,18 @@
 package fr.diginamic.hello.restcontrollers;
 
+import fr.diginamic.hello.dto.CityDto;
 import fr.diginamic.hello.exceptions.CityNotFoundException;
 import fr.diginamic.hello.exceptions.FunctionalException;
 import fr.diginamic.hello.mapper.CityMapper;
 import fr.diginamic.hello.model.City;
-import fr.diginamic.hello.dto.CityDto;
 import fr.diginamic.hello.services.CityService;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
