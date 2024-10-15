@@ -1,13 +1,12 @@
 package fr.diginamic.hello.services;
 
+import fr.diginamic.hello.dto.CityDto;
 import fr.diginamic.hello.exceptions.CityNotFoundException;
 import fr.diginamic.hello.exceptions.FunctionalException;
 import fr.diginamic.hello.mapper.CityMapper;
 import fr.diginamic.hello.model.City;
-import fr.diginamic.hello.dto.CityDto;
 import fr.diginamic.hello.model.Departement;
 import fr.diginamic.hello.repository.CityRepository;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
