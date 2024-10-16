@@ -70,7 +70,7 @@ public class CityController {
         return this.cityService.update(city);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable int id) {
         City existingCity = this.cityService.findById(id);
         if (existingCity == null) {

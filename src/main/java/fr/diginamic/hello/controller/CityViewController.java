@@ -30,4 +30,15 @@ public class CityViewController {
         model.addAttribute("city", city);
         return "city-detail";
     }
+
+    @GetMapping("/city/delete/{id}")
+    public String delete(
+            Model model,
+            @PathVariable long id) {
+        City city = cityService.findById(id);
+        this.cityService.delete(city);
+        return "redirect:/city";
+    }
+
+
 }

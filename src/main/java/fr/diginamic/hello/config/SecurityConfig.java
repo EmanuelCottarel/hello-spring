@@ -28,7 +28,6 @@ public class SecurityConfig {
         return username -> UserMapper.toUserDetails(this.userAccountRepository.findByUsername(username));
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       http.authorizeHttpRequests(request -> request
@@ -36,6 +35,7 @@ public class SecurityConfig {
               .requestMatchers("/logout").authenticated()
               .requestMatchers("/city").authenticated()
               .requestMatchers("/h2-console/**").permitAll()
+              .requestMatchers("/city/delete/**").hasRole("ADMIN")
               .anyRequest().denyAll())
               .httpBasic(Customizer.withDefaults())
               .formLogin(Customizer.withDefaults());
