@@ -1,23 +1,17 @@
 package fr.diginamic.hello.services;
 
-import fr.diginamic.hello.mapper.UserMapper;
 import fr.diginamic.hello.model.UserAccount;
 import fr.diginamic.hello.repository.UserAccountRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserAccountService implements UserDetailsService {
+public class UserAccountService {
 
     @Autowired
     private UserAccountRepository repository;
-    @Autowired
-    private UserAccountRepository userAccountRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -28,9 +22,4 @@ public class UserAccountService implements UserDetailsService {
         this.repository.save(new UserAccount("user", passwordEncoder.encode("user"), "ROLE_USER"));
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return UserMapper
-                .toUserDetails(userAccountRepository.findByUsername(username));
-    }
 }
